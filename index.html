@@ -1,0 +1,559 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
+    <title>Scavenger Hunt Instructions</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:opsz,wght@14..32,300;14..32,400;14..32,500;14..32,600;14..32,700;14..32,800&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            background: radial-gradient(circle at 10% 20%, #0a1f1a, #030b07);
+            font-family: 'Inter', 'Segoe UI', system-ui, sans-serif;
+            min-height: 100vh;
+            padding: 2rem 1.5rem;
+            position: relative;
+        }
+
+        /* elegant grain texture */
+        body::before {
+            content: "";
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 200 200' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noise'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.65' numOctaves='1' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noise)' opacity='0.08'/%3E%3C/svg%3E");
+            opacity: 0.3;
+            pointer-events: none;
+            z-index: 0;
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            position: relative;
+            z-index: 2;
+        }
+
+        /* header section */
+        .hero {
+            text-align: center;
+            margin-bottom: 2.5rem;
+            animation: fadeInUp 0.6s ease-out;
+        }
+
+        .badge-team {
+            display: inline-flex;
+            align-items: center;
+            gap: 12px;
+            background: rgba(218, 185, 95, 0.12);
+            backdrop-filter: blur(10px);
+            padding: 0.5rem 1.5rem;
+            border-radius: 80px;
+            border: 1px solid rgba(218, 185, 95, 0.35);
+            margin-bottom: 1.5rem;
+            font-weight: 600;
+            color: #eedfa8;
+            letter-spacing: 0.3px;
+        }
+
+        h1 {
+            font-size: 3.2rem;
+            font-weight: 800;
+            background: linear-gradient(135deg, #FFE5B4, #DAA520, #F7C873);
+            background-clip: text;
+            -webkit-background-clip: text;
+            color: transparent;
+            letter-spacing: -1px;
+            display: inline-flex;
+            align-items: center;
+            gap: 15px;
+            justify-content: center;
+            flex-wrap: wrap;
+        }
+
+        h1 i {
+            background: none;
+            color: #e9bc5e;
+            font-size: 2.6rem;
+        }
+
+        .sub {
+            color: #cdbc91;
+            margin-top: 1rem;
+            font-weight: 500;
+            font-size: 1.1rem;
+            max-width: 650px;
+            margin-left: auto;
+            margin-right: auto;
+        }
+
+        /* card style */
+        .glass-card {
+            background: rgba(30, 38, 32, 0.65);
+            backdrop-filter: blur(14px);
+            border-radius: 2rem;
+            border: 1px solid rgba(218, 185, 95, 0.25);
+            padding: 2rem 2rem 1.8rem;
+            margin-bottom: 2rem;
+            transition: transform 0.2s, box-shadow 0.2s;
+            animation: fadeInUp 0.5s ease-out backwards;
+        }
+
+        .glass-card:hover {
+            border-color: rgba(218, 185, 95, 0.5);
+            box-shadow: 0 12px 28px -10px rgba(0,0,0,0.5);
+        }
+
+        .section-title {
+            display: flex;
+            align-items: center;
+            gap: 14px;
+            font-size: 1.7rem;
+            font-weight: 700;
+            color: #f7d98c;
+            margin-bottom: 1.6rem;
+            border-left: 4px solid #e4b363;
+            padding-left: 1rem;
+        }
+
+        .section-title i {
+            font-size: 1.8rem;
+            color: #e4b363;
+        }
+
+        /* steps grid with interactive hover */
+        .steps-grid {
+            display: flex;
+            flex-direction: column;
+            gap: 1rem;
+        }
+
+        .step-item {
+            display: flex;
+            align-items: flex-start;
+            gap: 1.2rem;
+            background: rgba(0, 0, 0, 0.3);
+            padding: 1rem 1.2rem;
+            border-radius: 1.2rem;
+            transition: all 0.25s ease;
+            border: 1px solid rgba(200, 170, 100, 0.15);
+            cursor: default;
+        }
+
+        .step-item:hover {
+            background: rgba(0, 0, 0, 0.5);
+            border-color: rgba(218, 185, 95, 0.4);
+            transform: translateX(6px);
+        }
+
+        .step-number {
+            background: linear-gradient(145deg, #d99e3a, #b46f28);
+            color: #1f2a1b;
+            font-weight: 800;
+            width: 36px;
+            height: 36px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            border-radius: 60px;
+            flex-shrink: 0;
+            box-shadow: 0 4px 10px rgba(0,0,0,0.3);
+            font-size: 1.1rem;
+        }
+
+        .step-text {
+            font-size: 1rem;
+            line-height: 1.45;
+            color: #f2ecdb;
+        }
+
+        .step-text strong {
+            color: #ffde9c;
+            font-weight: 700;
+        }
+
+        .code-badge {
+            background: #1f1b12;
+            font-family: 'Monaco', monospace;
+            font-weight: bold;
+            padding: 0.2rem 0.7rem;
+            border-radius: 40px;
+            color: #f5bc70;
+            font-size: 0.85rem;
+            border: 0.5px solid #c9aa6f;
+            display: inline-block;
+            letter-spacing: 1px;
+        }
+
+        .info-highlight {
+            background: rgba(0, 0, 0, 0.45);
+            border-radius: 1.2rem;
+            padding: 1.2rem 1.5rem;
+            margin-top: 1.2rem;
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+            flex-wrap: wrap;
+            border-left: 3px solid #e4b363;
+        }
+
+        .info-highlight i {
+            font-size: 1.8rem;
+            color: #e4b363;
+        }
+
+        /* route map modern */
+        .route-grid {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 1rem;
+            justify-content: space-between;
+        }
+
+        .route-col {
+            flex: 1;
+            min-width: 180px;
+            background: rgba(0, 0, 0, 0.25);
+            border-radius: 1.2rem;
+            padding: 1rem;
+        }
+
+        .route-col ul {
+            list-style: none;
+        }
+
+        .route-col li {
+            margin-bottom: 0.8rem;
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            color: #e0d3b6;
+            font-size: 0.95rem;
+            transition: 0.1s;
+        }
+
+        .route-col li i {
+            width: 24px;
+            color: #e4b363;
+            font-size: 1rem;
+        }
+
+        /* interactive cta buttons */
+        .action-buttons {
+            display: flex;
+            justify-content: center;
+            gap: 1.2rem;
+            flex-wrap: wrap;
+            margin: 2rem 0 1rem;
+        }
+
+        .btn-start {
+            background: linear-gradient(105deg, #e4b15a, #bd822e);
+            border: none;
+            padding: 1rem 2.5rem;
+            border-radius: 80px;
+            font-weight: 800;
+            font-size: 1.2rem;
+            color: #1e2a1c;
+            display: inline-flex;
+            align-items: center;
+            gap: 12px;
+            cursor: pointer;
+            transition: 0.2s;
+            box-shadow: 0 8px 18px rgba(0,0,0,0.3);
+        }
+
+        .btn-start:hover {
+            transform: scale(1.02);
+            background: linear-gradient(105deg, #f0bc6a, #cf923a);
+            box-shadow: 0 10px 22px rgba(0,0,0,0.4);
+        }
+
+        .btn-start:active {
+            transform: translateY(2px);
+        }
+
+        .btn-secondary {
+            background: rgba(40, 48, 40, 0.8);
+            backdrop-filter: blur(4px);
+            border: 1px solid #bc9a5e;
+            padding: 0.8rem 2rem;
+            border-radius: 80px;
+            font-weight: 600;
+            color: #ffefcf;
+            cursor: pointer;
+            transition: 0.2s;
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .btn-secondary:hover {
+            background: rgba(70, 80, 65, 0.95);
+            border-color: #daae6e;
+        }
+
+        /* modal / toast style for interactive simulation */
+        .toast-message {
+            position: fixed;
+            bottom: 30px;
+            left: 50%;
+            transform: translateX(-50%) scale(0.9);
+            background: #1e2a22e6;
+            backdrop-filter: blur(16px);
+            color: #ffefcf;
+            padding: 0.9rem 1.8rem;
+            border-radius: 60px;
+            font-weight: 500;
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            z-index: 1000;
+            border: 1px solid #e4b363;
+            box-shadow: 0 8px 20px black;
+            opacity: 0;
+            transition: opacity 0.2s, transform 0.2s;
+            pointer-events: none;
+            font-size: 0.95rem;
+        }
+
+        .toast-message.show {
+            opacity: 1;
+            transform: translateX(-50%) scale(1);
+        }
+
+        footer {
+            text-align: center;
+            margin-top: 2rem;
+            font-size: 0.75rem;
+            color: #8f8468;
+            border-top: 1px solid rgba(200, 170, 100, 0.2);
+            padding-top: 1.5rem;
+        }
+
+        @keyframes fadeInUp {
+            from {
+                opacity: 0;
+                transform: translateY(20px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        @media (max-width: 720px) {
+            body {
+                padding: 1rem;
+            }
+            h1 {
+                font-size: 2rem;
+            }
+            .section-title {
+                font-size: 1.3rem;
+            }
+            .step-text {
+                font-size: 0.9rem;
+            }
+            .btn-start {
+                padding: 0.8rem 1.6rem;
+                font-size: 1rem;
+            }
+            .glass-card {
+                padding: 1.3rem;
+            }
+        }
+    </style>
+</head>
+<body>
+<div class="container">
+    <div class="hero">
+       
+        <h1>
+            <i class="fas fa-compass"></i> 
+            SCAVENGER HUNT
+            <i class="fas fa-key"></i>
+        </h1>
+        <div class="sub">Uncover hidden clues, explore locations, and crack the codes</div>
+    </div>
+
+    <!-- HOW THE GAME WORKS (core instructions) -->
+    <div class="glass-card">
+        <div class="section-title">
+            <i class="fas fa-play-circle"></i>
+            <span>HOW THE GAME WORKS</span>
+        </div>
+        <div class="steps-grid">
+            <div class="step-item">
+                <div class="step-number">1</div>
+                <div class="step-text"><strong>First clue appears on the website.</strong> — Your team will receive the opening riddle. Read carefully and find the correct spot.</div>
+            </div>
+            <div class="step-item">
+                <div class="step-number">2</div>
+                <div class="step-text"><strong>Find the correct classroom / location.</strong> — Use the clue to navigate around the campus. Each location matches one unique riddle.</div>
+            </div>
+            <div class="step-item">
+                <div class="step-number">3</div>
+                <div class="step-text"><strong>Station keeper & challenge.</strong> — At every station, a <strong>station keeper</strong> will supervise. Complete the activity or challenge they give you.</div>
+            </div>
+            <div class="step-item">
+                <div class="step-number">4</div>
+                <div class="step-text"><strong>Receive a special code.</strong> — After finishing the station task, the keeper will give your group a <span class="code-badge"><i class="fas fa-lock-open"></i> unique 4-digit code</span>.</div>
+            </div>
+            <div class="step-item">
+                <div class="step-number">5</div>
+                <div class="step-text"><strong>Enter the code on the website.</strong> — Go back to the game page and type the code. If correct, the next clue will be revealed instantly.</div>
+            </div>
+            <div class="step-item">
+                <div class="step-number">6</div>
+                <div class="step-text"><strong>Next clue appears → repeat.</strong> — Follow the new clue to the next station. The adventure continues until all locations are discovered.</div>
+            </div>
+            <div class="step-item">
+                <div class="step-number">7</div>
+                <div class="step-text"><strong>Finish all stations & win!</strong> — After unlocking every location, your team completes the Scavenger Hunt. Celebrate victory! 🏆</div>
+            </div>
+        </div>
+    </div>
+
+   
+    <!-- Action buttons: interactive but no full game — just simulation of starting the hunt & reset demo -->
+    <div class="action-buttons">
+        <button id="startJourneyBtn" class="btn-start"><i class="fas fa-play"></i> START THE HUNT</button>
+        <button id="remindMeBtn" class="btn-secondary"><i class="fas fa-question-circle"></i> HOW TO PLAY?</button>
+    </div>
+    <footer>
+        <i class="fas fa-shield-alt"></i> Stay with your team. Only official station keepers provide codes. Good luck, hunters!<br>
+        © Scavenger Hunt — Follow the clues, unlock the map.
+    </footer>
+</div>
+
+<!-- Toast message for interactive feedback -->
+<div id="dynamicToast" class="toast-message">
+    <i class="fas fa-info-circle"></i> <span id="toastText">Message</span>
+</div>
+
+<script>
+    // Interactive but not the full game — just informative with smooth UX.
+    // Provides "START THE HUNT" -> show reminder to open game portal (since this is instructions page)
+    // And "HOW TO PLAY?" shows quick summary.
+    // Also interactive hover effects + optional demo that highlights the process.
+    // This page focuses solely on instructions, no game engine logic.
+    
+    const toastEl = document.getElementById('dynamicToast');
+    const toastText = document.getElementById('toastText');
+    
+    function showMessage(message, isSuccess = true) {
+        toastText.innerText = message;
+        toastEl.classList.add('show');
+        setTimeout(() => {
+            toastEl.classList.remove('show');
+        }, 2800);
+    }
+    
+    // Start button: shows a friendly reminder to begin the actual game (assuming they have game page)
+    // Since user requested "just instruction, not the whole game", we don't embed the game.
+    // Instead, we can simulate a "ready to play" action and link to game (if game page exists) OR show a modal telling to launch game.
+    // In real scenario, we can redirect to game.html, but to keep it purely instructional and interactive, we display a nice toast + optional popup.
+    // Because the client might integrate with existing game later, but this page remains instructions only.
+    // I'll add a subtle animated guidance: "Open your game portal / switch to game tab" – no redirect forced.
+    
+    const startBtn = document.getElementById('startJourneyBtn');
+    const remindBtn = document.getElementById('remindMeBtn');
+    
+    startBtn.addEventListener('click', () => {
+        // Interactive instruction: tells user to prepare for actual game
+        showMessage("🎯 Ready to hunt? Open the official GAME PAGE to enter your first clue! The adventure starts now.", true);
+        // Additional: slight pulse effect to emphasize next step
+        startBtn.style.transform = "scale(0.98)";
+        setTimeout(() => { startBtn.style.transform = ""; }, 150);
+        
+        // Optional: we can create a small tooltip or just message.
+        // Provide extra hint about first step.
+        setTimeout(() => {
+            showMessage("💡 Reminder: The first code to unlock the game is given by the organizer. Good luck!", true);
+        }, 2800);
+    });
+    
+    remindBtn.addEventListener('click', () => {
+        // Summarize how the game flows in a compact way
+        showMessage("📍 1. Clue → 2. Find location → 3. Station keeper → 4. Get code → 5. Enter on website → 6. Next clue! Repeat until finish.", true);
+    });
+    
+    // Add interactive "copy tip" for station keepers – extra interactive card effect
+    // We also add an interactive element that highlights the 'code' concept
+    const allSteps = document.querySelectorAll('.step-item');
+    allSteps.forEach((step, idx) => {
+        step.addEventListener('click', () => {
+            // just an engaging micro-interaction: show the step description in toast
+            const stepTextElem = step.querySelector('.step-text');
+            if (stepTextElem) {
+                const rawText = stepTextElem.innerText.slice(0, 100);
+                showMessage(`🔍 Step ${idx+1}: ${rawText}`, false);
+            }
+        });
+    });
+    
+    // add ripple effect on cards / buttons - interactive UX polish
+    const cards = document.querySelectorAll('.glass-card');
+    cards.forEach(card => {
+        card.addEventListener('mouseenter', (e) => {
+            card.style.transition = "all 0.2s";
+        });
+    });
+    
+    // Simulate that user understands the code flow: add demo click on route preview
+    const routeItems = document.querySelectorAll('.route-col li');
+    routeItems.forEach(item => {
+        item.style.cursor = "pointer";
+        item.addEventListener('click', () => {
+            const locationName = item.innerText.split(/\d+\.\s/).pop();
+            showMessage(`📍 ${locationName} — You'll get a unique code after completing the station challenge.`, false);
+        });
+    });
+    
+    // Additional elegant interactive: show a mini "code example" on info box hover
+    const infoBox = document.querySelector('.info-highlight');
+    if(infoBox) {
+        infoBox.addEventListener('click', () => {
+            showMessage("🔑 Example: after finishing a station, keeper says '8293' — enter that code online to reveal next clue!", true);
+        });
+        infoBox.style.cursor = "pointer";
+    }
+    
+    // For first-time visitors, show a welcome tip after slight delay
+    setTimeout(() => {
+        showMessage("✨ Welcome Hunters! Read the instructions, then press 'START THE HUNT' to begin your journey.", true);
+    }, 800);
+    
+    // adding smooth scroll to top when logo or header clicked? not needed but cute
+    const hero = document.querySelector('.hero');
+    if(hero) {
+        hero.style.cursor = "pointer";
+        hero.addEventListener('click', () => {
+            window.scrollTo({ top: 0, behavior: 'smooth' });
+            showMessage("🏁 Scavenger Hunt HQ — follow every clue step by step.", false);
+        });
+    }
+    
+    // Tooltip for badges: show explanation of "station keeper"
+    const badge = document.querySelector('.badge-team');
+    if(badge) {
+        badge.title = "Team A official mission | Station Keepers will supervise each location";
+        badge.addEventListener('mouseenter', () => {
+            showMessage("👥 Station Keepers are volunteers at each spot. Complete the challenge → they give the code!", false);
+        });
+    }
+    
+    // Additional UX: a small interactive pulse for the entire instruction card on load?
+    console.log("Interactive instruction page — modern UI ready, game logic not embedded (pure instructions)");
+</script>
+</body>
+</html>

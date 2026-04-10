@@ -1,0 +1,691 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no, viewport-fit=cover">
+    <title>Scavenger Hunt | Team Eclipse — Mysterious Adventure</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:opsz,wght@14..32,300;14..32,400;14..32,500;14..32,600;14..32,700;14..32,800&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            background: radial-gradient(circle at 10% 20%, #0a1f1a, #05100c);
+            min-height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-family: 'Inter', 'Segoe UI', system-ui, -apple-system, sans-serif;
+            padding: 1.5rem;
+            position: relative;
+        }
+
+        /* efek grain / noise */
+        body::before {
+            content: "";
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 200 200' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noise'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.65' numOctaves='1' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noise)' opacity='0.08'/%3E%3C/svg%3E");
+            opacity: 0.4;
+            pointer-events: none;
+            z-index: 0;
+        }
+
+        /* container utama */
+        .game-wrapper {
+            max-width: 720px;
+            width: 100%;
+            background: rgba(20, 28, 24, 0.65);
+            backdrop-filter: blur(14px);
+            border-radius: 3rem;
+            box-shadow: 0 25px 45px -12px rgba(0, 0, 0, 0.6), 0 0 0 1px rgba(210, 180, 110, 0.2);
+            transition: all 0.3s ease;
+            z-index: 2;
+            overflow: hidden;
+        }
+
+        /* header premium */
+        .premium-header {
+            padding: 1.5rem 2rem 1rem;
+            background: linear-gradient(135deg, rgba(30, 38, 32, 0.85) 0%, rgba(15, 22, 18, 0.9) 100%);
+            border-bottom: 1px solid rgba(218, 185, 95, 0.35);
+            text-align: center;
+            position: relative;
+        }
+
+        .badge-team {
+            background: rgba(218, 185, 95, 0.2);
+            backdrop-filter: blur(4px);
+            display: inline-flex;
+            align-items: center;
+            gap: 0.5rem;
+            padding: 0.3rem 1.2rem;
+            border-radius: 40px;
+            font-size: 0.8rem;
+            font-weight: 500;
+            color: #e9d6a3;
+            letter-spacing: 0.5px;
+            border: 0.5px solid rgba(218, 185, 95, 0.5);
+            margin-bottom: 1rem;
+        }
+
+        h1 {
+            font-size: 2.3rem;
+            font-weight: 800;
+            background: linear-gradient(125deg, #FFE5B4, #DAA520, #F7C873);
+            background-clip: text;
+            -webkit-background-clip: text;
+            color: transparent;
+            letter-spacing: -0.5px;
+            display: inline-flex;
+            align-items: center;
+            gap: 12px;
+            justify-content: center;
+            flex-wrap: wrap;
+        }
+
+        h1 i {
+            background: none;
+            color: #e9bc5e;
+            font-size: 2rem;
+            -webkit-background-clip: unset;
+            background-clip: unset;
+        }
+
+        /* progress modern */
+        .progress-modern {
+            background: rgba(0, 0, 0, 0.45);
+            border-radius: 100px;
+            margin: 0 1.8rem 1rem 1.8rem;
+            height: 8px;
+            overflow: hidden;
+            backdrop-filter: blur(2px);
+        }
+
+        .progress-fill-modern {
+            width: 0%;
+            height: 100%;
+            background: linear-gradient(90deg, #e4b363, #ffcf7a, #e4b363);
+            border-radius: 100px;
+            transition: width 0.5s cubic-bezier(0.2, 0.9, 0.4, 1.1);
+            box-shadow: 0 0 6px #ffdf9c;
+        }
+
+        .step-indicator {
+            display: flex;
+            justify-content: space-between;
+            align-items: baseline;
+            padding: 0 1.8rem 0.5rem;
+            font-size: 0.75rem;
+            font-weight: 500;
+            color: #bcb09b;
+            letter-spacing: 0.3px;
+        }
+
+        .step-count {
+            color: #f7d98c;
+            background: #2a241c80;
+            padding: 0.2rem 0.9rem;
+            border-radius: 30px;
+            font-size: 0.7rem;
+            font-weight: 600;
+        }
+
+        /* konten utama */
+        .glass-panel {
+            padding: 2rem 1.8rem 2.2rem;
+        }
+
+        /* clue card modern */
+        .clue-modern {
+            background: rgba(255, 250, 235, 0.96);
+            border-radius: 2rem;
+            padding: 1.8rem 1.5rem;
+            margin-bottom: 2rem;
+            box-shadow: 0 20px 35px -12px rgba(0, 0, 0, 0.3);
+            transition: transform 0.2s ease;
+            border: 1px solid rgba(230, 200, 120, 0.6);
+        }
+
+        .location-icon {
+            display: flex;
+            justify-content: center;
+            margin-bottom: 0.75rem;
+        }
+
+        .location-icon span {
+            background: #e8dbbc;
+            width: 56px;
+            height: 56px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            border-radius: 60px;
+            font-size: 1.9rem;
+            box-shadow: inset 0 0 0 1px #fff6e5, 0 6px 12px rgba(0,0,0,0.1);
+        }
+
+        .location-title {
+            text-align: center;
+            font-size: 1.7rem;
+            font-weight: 800;
+            color: #a7582c;
+            margin: 0.5rem 0 1rem 0;
+            letter-spacing: -0.3px;
+            background: linear-gradient(135deg, #b45f2b, #8b4513);
+            background-clip: text;
+            -webkit-background-clip: text;
+            color: transparent;
+        }
+
+        .clue-text-modern {
+            background: #fff7ea;
+            padding: 1.5rem;
+            border-radius: 1.5rem;
+            font-size: 1.05rem;
+            line-height: 1.55;
+            color: #2f241b;
+            font-weight: 500;
+            text-align: center;
+            font-style: normal;
+            box-shadow: inset 0 1px 2px rgba(0,0,0,0.02), 0 2px 6px rgba(0,0,0,0.05);
+            border: 1px solid #ffe2b5;
+            white-space: pre-line;
+        }
+
+        /* code section modern */
+        .code-modern {
+            background: rgba(45, 38, 30, 0.65);
+            backdrop-filter: blur(8px);
+            border-radius: 1.8rem;
+            padding: 1.5rem;
+            margin-top: 0.5rem;
+            text-align: center;
+            border: 0.5px solid rgba(220, 190, 110, 0.5);
+        }
+
+        .code-label {
+            font-weight: 600;
+            font-size: 0.85rem;
+            text-transform: uppercase;
+            letter-spacing: 1.5px;
+            color: #e9cf9e;
+            margin-bottom: 1rem;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 0.6rem;
+        }
+
+        .input-group {
+            display: flex;
+            flex-wrap: wrap;
+            justify-content: center;
+            gap: 0.8rem;
+            margin: 1rem 0 0.8rem;
+        }
+
+        .input-code {
+            background: #1f1b15;
+            border: 1.5px solid #c9aa6f;
+            font-size: 1.8rem;
+            width: 200px;
+            text-align: center;
+            padding: 12px 0;
+            font-family: 'Monaco', 'Courier New', monospace;
+            font-weight: 700;
+            letter-spacing: 5px;
+            color: #ffeaac;
+            border-radius: 60px;
+            outline: none;
+            transition: all 0.2s;
+            box-shadow: inset 0 2px 4px #00000033;
+        }
+
+        .input-code:focus {
+            border-color: #f5bc70;
+            box-shadow: 0 0 0 2px rgba(245, 188, 112, 0.5);
+            transform: scale(1.02);
+            background: #14100c;
+        }
+
+        /* buttons */
+        .btn-primary {
+            background: linear-gradient(105deg, #d99e3a, #b8702a);
+            border: none;
+            padding: 12px 32px;
+            border-radius: 50px;
+            font-weight: 700;
+            font-size: 1rem;
+            color: #241e15;
+            cursor: pointer;
+            transition: all 0.2s ease;
+            display: inline-flex;
+            align-items: center;
+            gap: 12px;
+            box-shadow: 0 4px 8px rgba(0,0,0,0.2);
+        }
+
+        .btn-primary:active {
+            transform: translateY(2px);
+            box-shadow: 0 1px 3px black;
+        }
+
+        .btn-secondary {
+            background: rgba(70, 80, 65, 0.8);
+            backdrop-filter: blur(4px);
+            border: 1px solid rgba(200, 170, 100, 0.6);
+            padding: 10px 24px;
+            border-radius: 40px;
+            font-weight: 600;
+            color: #f2e5cf;
+            transition: 0.2s;
+            cursor: pointer;
+        }
+
+        .btn-secondary:hover {
+            background: rgba(90, 100, 80, 0.9);
+        }
+
+        .btn-winner {
+            background: linear-gradient(125deg, #b8860b, #e6b422);
+            color: #221c0f;
+            font-weight: 800;
+        }
+
+        .message-toast {
+            margin-top: 1.2rem;
+            padding: 0.8rem 1.2rem;
+            border-radius: 60px;
+            font-weight: 500;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 10px;
+            backdrop-filter: blur(12px);
+            animation: fadeSlide 0.3s ease;
+        }
+
+        .message-success {
+            background: #2b6e44dd;
+            color: #faf0cf;
+            border-left: 4px solid #f7d44a;
+        }
+
+        .message-error {
+            background: #b1432cdd;
+            color: #ffe3cf;
+            border-left: 4px solid #ffb347;
+        }
+
+        @keyframes fadeSlide {
+            from {
+                opacity: 0;
+                transform: translateY(10px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        .reset-btn-bottom {
+            margin-top: 1.5rem;
+            text-align: center;
+        }
+
+        footer {
+            padding: 1rem;
+            font-size: 0.7rem;
+            text-align: center;
+            color: #938b73;
+            background: rgba(0, 0, 0, 0.3);
+            border-top: 1px solid rgba(210, 170, 90, 0.2);
+        }
+
+        @media (max-width: 550px) {
+            .glass-panel {
+                padding: 1.2rem;
+            }
+            .location-title {
+                font-size: 1.4rem;
+            }
+            .clue-text-modern {
+                font-size: 0.9rem;
+                padding: 1rem;
+            }
+            .input-code {
+                width: 160px;
+                font-size: 1.4rem;
+                letter-spacing: 3px;
+            }
+            h1 {
+                font-size: 1.7rem;
+            }
+        }
+    </style>
+</head>
+<body>
+<div class="game-wrapper" id="gameRootModern">
+    <div class="premium-header">
+        <div class="badge-team">
+            <i class="fas fa-compass"></i> TEAM ECLIPSE · ELITE HUNTERS <i class="fas fa-map-marked-alt"></i>
+        </div>
+        <h1>
+            <i class="fas fa-search-location"></i> 
+            SCVR·HUNT
+            <i class="fas fa-key"></i>
+        </h1>
+    </div>
+    <div id="dynamicModernPanel">
+        <!-- dynamic content akan di render oleh js modern -->
+    </div>
+    <footer>
+        <i class="fas fa-lock-open"></i> Enter the secret code to unlock the next clue • Adventure awaits
+    </footer>
+</div>
+
+<script>
+    // ---------- DATA SCAVENGER HUNT (TIDAK BERUBAH) ----------
+    const LOCATIONS = [
+        { 
+            name: "GRADE 10", 
+            icon: "🎓",
+            clue: `“Closer to the finish line,\nWhere older students learn and shine.\nA step before they say goodbye—\nFind where Grade (√100 + (5 − 5)) students lie.”`,
+            nextCode: "2709"
+        },
+        { 
+            name: "BASKETBALL FIELD", 
+            icon: "🏀",
+            clue: `“Bounce the ball, hear sneakers squeak,\nShoot your shot, don’t be weak.\nHoops stand tall, the court is wide—\nFind the place where players glide.”`,
+            nextCode: "5276"
+        },
+        { 
+            name: "GRADE 6", 
+            icon: "🍎",
+            clue: `“Younger minds begin to grow,\nLearning all they need to know.\nNear the start of their big quest—\nFind where Grade (60 − (6 × 9)) does their best.”`,
+            nextCode: "7341"
+        },
+        { 
+            name: "PLAYGROUND", 
+            icon: "🌈",
+            clue: `“Slides and swings, laughter loud,\nThe happiest place in a crowd.\nRun and jump, have some fun\nFind where playtime has begun.”`,
+            nextCode: "1234"
+        },
+        { 
+            name: "AUDITORIUM", 
+            icon: "🎭",
+            clue: `“A stage so big, with lights so bright,\nWhere voices echo day and night.\nAssemblies, shows, and speeches too\nCome find the hall that faces you.”`,
+            nextCode: "8293"
+        },
+        { 
+            name: "WAITING ROOM", 
+            icon: "🚐",
+            clue: `“Drivers rest while engines sleep,\nOB waits with patience deep.\nBefore the journey starts its track,\nThis is the place they all come back.”`,
+            nextCode: "6284"
+        },
+        { 
+            name: "GRADE 8", 
+            icon: "📚",
+            clue: `“Not too young, not yet the oldest crew,\nThis room belongs to the middle few.\nBooks and laughter fill the air—\nFind Grade ((x + 2) ÷ 2 = 5) !”`,
+            nextCode: "1234"
+        },
+        { 
+            name: "MUSIC ROOM", 
+            icon: "🎵",
+            clue: `“Melodies and rhythms play,\nInstruments guide the way.\nIf you can hear a song in bloom,\nYou’re getting close to this room.”`,
+            nextCode: null
+        },
+    ];
+
+    // State
+    let currentStep = -1;          // -1 = start menu
+    let accessGranted = false;
+    let gameMessage = "";
+    let messageType = "success";
+    let timeoutMsg = null;
+
+    // Helper: tampilkan pesan modern
+    function showModernMessage(msg, type) {
+        if (timeoutMsg) clearTimeout(timeoutMsg);
+        gameMessage = msg;
+        messageType = type;
+        renderModern();
+        timeoutMsg = setTimeout(() => {
+            if (gameMessage === msg) {
+                gameMessage = "";
+                renderModern();
+            }
+            timeoutMsg = null;
+        }, 2400);
+    }
+
+    // reset total game
+    function resetFullGame() {
+        currentStep = -1;
+        accessGranted = false;
+        gameMessage = "✨ The adventure has reset. Press START to begin! ✨";
+        messageType = "success";
+        renderModern();
+        if (timeoutMsg) clearTimeout(timeoutMsg);
+        timeoutMsg = setTimeout(() => {
+            if (gameMessage === "✨ The adventure has reset. Press START to begin! ✨") {
+                gameMessage = "";
+                renderModern();
+            }
+        }, 2500);
+    }
+
+    // fungsi untuk lanjut ke lokasi berikutnya
+    function goToNextLocation() {
+        if (currentStep + 1 < LOCATIONS.length) {
+            currentStep++;
+            const newLoc = LOCATIONS[currentStep];
+            showModernMessage(`✔ The code is correct! Heading to ${newLoc.icon} ${newLoc.name}`, "success");
+            renderModern();
+        } else {
+            // kondisi finish (tidak mungkin karena tombol tidak muncul)
+        }
+    }
+
+    // event untuk start code
+    function attachStartModern() {
+        const startBtn = document.getElementById("modernStartBtn");
+        const startInput = document.getElementById("startCodeInputModern");
+        if (!startBtn || !startInput) return;
+        const verifyStart = () => {
+            const val = startInput.value.trim();
+            if (val === "1234") {
+                accessGranted = true;
+                currentStep = 0;
+                showModernMessage("✅ Access GRANTED! Welcome to the Scavenger Hunt.", "success");
+                renderModern();
+            } else {
+                showModernMessage("❌ WRONG START CODE ! ", "error");
+                startInput.value = "";
+                startInput.focus();
+            }
+        };
+        startBtn.onclick = verifyStart;
+        startInput.onkeypress = (e) => { if (e.key === "Enter") verifyStart(); };
+    }
+
+    // event untuk kode lanjutan (next code)
+    function attachNextCodeModern(expectedCode) {
+        const submitBtn = document.getElementById("modernSubmitCode");
+        const codeInput = document.getElementById("nextCodeInputModern");
+        if (!submitBtn || !codeInput) return;
+        const handler = () => {
+            const entered = codeInput.value.trim();
+            if (!entered) {
+                showModernMessage("🔐 Enter the secret code first!", "error");
+                return;
+            }
+            if (entered === expectedCode) {
+                // pindah ke stage selanjutnya
+                if (currentStep + 1 < LOCATIONS.length) {
+                    currentStep++;
+                    const nextLoc = LOCATIONS[currentStep];
+                    showModernMessage(`🎉 The code is correct! Opening: ${nextLoc.icon} ${nextLoc.name}`, "success");
+                    renderModern();
+                } else {
+                    // sudah di akhir, tidak mungkin ada tombol ini karena final stage
+                    showModernMessage("🏁 You've completed all the locations!", "success");
+                }
+            } else {
+                showModernMessage(`❌ Wrong code! Please check the instructions in ${LOCATIONS[currentStep].name}`, "error");
+                codeInput.value = "";
+                codeInput.focus();
+            }
+        };
+        submitBtn.onclick = handler;
+        codeInput.onkeypress = (e) => { if (e.key === "Enter") handler(); };
+    }
+
+    // render utama dengan UI modern
+    function renderModern() {
+        const container = document.getElementById("dynamicModernPanel");
+        if (!container) return;
+
+        const totalLocations = LOCATIONS.length;
+        let progressPercent = 0;
+        let stepDisplay = 0;
+        if (accessGranted && currentStep >= 0) {
+            stepDisplay = currentStep + 1;
+            progressPercent = ((currentStep + 1) / totalLocations) * 100;
+        }
+
+        let html = `
+            <div class="progress-modern">
+                <div class="progress-fill-modern" style="width: ${progressPercent}%;"></div>
+            </div>
+            <div class="step-indicator">
+                <span><i class="fas fa-route"></i> Team Eclipse Expedition</span>
+                <span class="step-count">${accessGranted && currentStep >= 0 ? `${stepDisplay} / ${totalLocations} location` : "HASN'T STARTED YET"}</span>
+            </div>
+            <div class="glass-panel">
+        `;
+
+        // BELUM START
+        if (!accessGranted) {
+            html += `
+                <div class="clue-modern" style="text-align: center;">
+                    <div class="location-icon"><span>🔐</span></div>
+                    <div class="location-title">Adventure Gate</div>
+                    <div class="clue-text-modern" style="font-weight: 500;">
+                        <i class="fas fa-crown"></i> Welcome Hunters! <br>
+                        Enter the initial access code to start the Scavenger Hunt.
+                    </div>
+                    <div class="code-modern" style="margin-top: 1.2rem;">
+                        <div class="code-label"><i class="fas fa-fingerprint"></i> SECRET START CODE</div>
+                        <div class="input-group">
+                            <input type="text" id="startCodeInputModern" class="input-code" placeholder="****" maxlength="4" inputmode="numeric">
+                            <button id="modernStartBtn" class="btn-primary"><i class="fas fa-play"></i> START HUNT</button>
+                        </div>
+                        <div style="font-size:0.7rem; margin-top: 0.4rem; opacity:0.8;"></div>
+                    </div>
+                </div>
+            `;
+            if (gameMessage) {
+                html += `<div class="message-toast ${messageType === 'success' ? 'message-success' : 'message-error'}">
+                            <i class="${messageType === 'success' ? 'fas fa-check-circle' : 'fas fa-exclamation-triangle'}"></i> ${gameMessage}
+                         </div>`;
+            }
+            html += `</div>`;
+            container.innerHTML = html;
+            attachStartModern();
+            return;
+        }
+
+        // jika sudah granted tapi currentStep -1 (safety)
+        if (accessGranted && currentStep === -1) currentStep = 0;
+
+        const active = LOCATIONS[currentStep];
+        const isLast = (currentStep === totalLocations - 1);
+
+        // tampilkan clue card modern
+        html += `
+            <div class="clue-modern">
+                <div class="location-icon"><span>${active.icon}</span></div>
+                <div class="location-title">${active.name}</div>
+                <div class="clue-text-modern">${active.clue.replace(/\n/g, '<br>')}</div>
+        `;
+
+        if (!isLast) {
+            const requiredCode = active.nextCode;
+            html += `
+                <div class="code-modern">
+                    <div class="code-label"><i class="fas fa-key"></i> CODE FOR NEXT LOCATION</div>
+                    <div class="input-group">
+                        <input type="text" id="nextCodeInputModern" class="input-code" placeholder="Code" maxlength="4" inputmode="numeric">
+                        <button id="modernSubmitCode" class="btn-primary"><i class="fas fa-arrow-right-to-bracket"></i> OPEN CLUES</button>
+                    </div>
+                    <div style="font-size: 0.7rem; margin-top: 0.3rem;"><i class="fas fa-lightbulb"></i> Enter the secret code of the current location</div>
+                </div>
+                <div class="reset-btn-bottom">
+                    <button id="modernResetBtn" class="btn-secondary"><i class="fas fa-sync-alt"></i> Reset Adventure</button>
+                </div>
+            `;
+        } else {
+            // halaman kemenangan
+            html += `
+                <div class="code-modern" style="background: linear-gradient(145deg, #2d482b, #1f351d);">
+                    <div style="font-size: 2rem;">🏆🏆🏆</div>
+                    <div style="font-weight: 800; font-size: 1.6rem; color: #fad974;">MISSION COMPLETED!</div>
+                    <div style="margin: 0.5rem 0;">This team successfully completed all clues & locations</div>
+                </div>
+            `;
+        }
+
+        if (gameMessage && !isLast) {
+            html += `<div class="message-toast ${messageType === 'success' ? 'message-success' : 'message-error'}">
+                        <i class="${messageType === 'success' ? 'fas fa-check-circle' : 'fas fa-skull-crosswalk'}"></i> ${gameMessage}
+                     </div>`;
+        } else if (gameMessage && isLast) {
+            html += `<div class="message-toast message-success" style="margin-top: 1rem;">
+                        <i class="fas fa-flag-checkered"></i> ${gameMessage}
+                     </div>`;
+        }
+
+        html += `</div>`; // tutup glass-panel
+        container.innerHTML = html;
+
+        // attach events sesuai kondisi
+        if (!isLast && accessGranted && currentStep >= 0) {
+            const required = LOCATIONS[currentStep].nextCode;
+            attachNextCodeModern(required);
+            const resetBtn = document.getElementById("modernResetBtn");
+            if (resetBtn) resetBtn.onclick = () => resetFullGame();
+        } 
+        
+        if (isLast) {
+            const finishReset = document.getElementById("modernResetFinishBtn");
+            if (finishReset) finishReset.onclick = () => resetFullGame();
+            // juga tambahkan reset jika ada tombol lain? tidak perlu
+        }
+        
+        // untuk kasus tertentu jika masih ada tombol reset lain di non-last sudah di handle
+        if (!isLast && !document.getElementById("modernResetBtn") && !isLast) {
+            // fallback jika tidak muncul, tapi seharusnya ada
+        }
+    }
+
+    // inisialisasi
+    function initModern() {
+        currentStep = -1;
+        accessGranted = false;
+        gameMessage = "";
+        renderModern();
+    }
+    
+    initModern();
+</script>
+</body>
+</html>
